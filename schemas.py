@@ -65,3 +65,16 @@ class UserTokenSchema(Schema):
 
     class Meta:
         description = "Esquema para resposta da rota de login do usuário"
+
+#schemas para trasaction.py
+class UserDataSchema(Schema):
+    user_id = fields.Integer(required=True)
+
+class PaymentSchema(Schema):
+    remaining_value = fields.Float(required=True)
+    user_data = fields.Nested(UserDataSchema, required=True)
+    amount = fields.Float(required=True)
+
+class CouponSchema(Schema):
+    code = fields.String(required=True)
+    value = fields.Float(required=True)

@@ -7,4 +7,4 @@ flask-jwt-extended
 passlib
 blocklist
 flask-cors
-
+requests

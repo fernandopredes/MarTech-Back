@@ -11,8 +11,9 @@ from db import db
 import models
 
 from resources.user import blp as UserBlueprint
-""" from resources.coupon import blp as CouponBlueprint
-from resources.transaction import blp as TransactionBluePrint """
+from resources.transaction import TransactionBlueprint
+from resources.coupon import CouponBlueprint
+
 
 def create_app(db_url=None):
     app = Flask(__name__)
@@ -108,7 +109,11 @@ def create_app(db_url=None):
         db.create_all()
 
     api.register_blueprint(UserBlueprint)
-    """     api.register_blueprint(CouponBlueprint)
-    api.register_blueprint(TransactionBluePrint) """
+    api.register_blueprint(TransactionBlueprint)
+    api.register_blueprint(CouponBlueprint)
+    
+    if __name__ == "__main__":
+        app = create_app()
+        app.run(debug=True)
 
     return app
