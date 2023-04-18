@@ -35,3 +35,33 @@ class TransactionSchema(Schema):
 
     class Meta:
         description = "Define a estrutura de uma transação"
+
+class UserLoginSchema(Schema):
+    """
+    Define como deve ser a estrutura para realizar o login de um usuário.
+    """
+    email = fields.Email(required=True, description="e-mail do usuário")
+    password = fields.Str(required=True, load_only=True, description="password do usuário")
+
+    class Meta:
+        description = "Define como um login de usuário deve ser representado"
+
+
+class CreateUserSchema(Schema):
+    """
+    Define como deve ser a estrutura do dado após criação de usuário.
+    """
+    message = fields.String(description="Mensagem de usuário criado")
+
+    class Meta:
+        description = "Esquema de mensagem após a criação de usuário."
+
+class UserTokenSchema(Schema):
+    """
+    Define como deve ser a estrutura do dado após um login.
+    """
+    access_token = fields.String(description="Token de acesso")
+    user_id = fields.Int(description="Id do usuário")
+
+    class Meta:
+        description = "Esquema para resposta da rota de login do usuário"

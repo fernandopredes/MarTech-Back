@@ -1,5 +1,7 @@
 from db import db
 from models.user_items import user_items
+from models.coupon import CouponModel
+from models.transaction import TransactionModel
 
 class UserModel(db.Model):
     __tablename__ = 'user'
@@ -9,6 +11,6 @@ class UserModel(db.Model):
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
 
-    coupons = db.relationship('Coupon', backref='user', lazy=True)
-    items = db.relationship('Item', secondary=user_items, backref=db.backref('users', lazy=True))
-    transactions = db.relationship('Transaction', backref='user', lazy=True)
+    coupons = db.relationship('CouponModel', backref='user', lazy=True)
+    items = db.relationship('ItemModel', secondary=user_items, backref=db.backref('users', lazy=True))
+    transactions = db.relationship('TransactionModel', backref='user', lazy=True)
