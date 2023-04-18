@@ -78,3 +78,8 @@ class PaymentSchema(Schema):
 class CouponSchema(Schema):
     code = fields.String(required=True)
     value = fields.Float(required=True)
+
+#schemas para payment
+class ExecutePaymentSchema(Schema):
+    payer_id = fields.String(required=True)
+    payment_id = fields.String(required=True)

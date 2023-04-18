@@ -4,7 +4,7 @@ from flask.views import MethodView
 from flask_smorest import Blueprint
 from .coupon_utils import create_coupon
 from .transaction_utils import create_transaction
-from schemas import PaymentSchema, CouponSchema
+from schemas import PaymentSchema, CouponSchema, ExecutePaymentSchema
 
 TransactionBlueprint = Blueprint('transaction', __name__)
 
@@ -80,12 +80,43 @@ class ProcessPayment(MethodView):
             # Obter o user_id e o transaction_id e Salve a transação no banco de dados
             transaction = create_transaction(user_id, payment_id, remaining_value)
 
+            # Aprovação da URL para redirecionar o usuário
+            approval_url = next((link["href"] for link in payment_response_data["links"] if link["rel"] == "approval_url"), None)
 
-            # Crie um cupom com o valor que sobrou no cartão
-            coupon = create_coupon(user_id, transaction.id, remaining_value)
+            if approval_url:
+                return {"approval_url": approval_url}, 201
+            else:
+                return {"success": False, "data": "Falha no processamento de pagamento."}, 400
 
 
-            return coupon, 201
+@TransactionBlueprint.route('/execute_payment', methods=['POST'])
+class ExecutePayment(MethodView):
+    @TransactionBlueprint.arguments(ExecutePaymentSchema, location="json")
+    @TransactionBlueprint.response(200, description="Pagamento executado com sucesso.")
+    @TransactionBlueprint.response(400, description="Falha na execução do pagamento.")
+    def post(self, execute_data):
+        payment_id = execute_data.get('payment_id')
+        payer_id = execute_data.get('payer_id')
+
+        if not payment_id or not payer_id:
+            return {"error": "payment_id e payer_id são obrigatórios"}, 400
+
+        access_token = get_paypal_access_token()
+
+        # Executar o pagamento
+        execute_url = f'https://api-m.sandbox.paypal.com/v1/payments/payment/{payment_id}/execute' if PAYPAL_MODE == "sandbox" else f'https://api-m.paypal.com/v1/payments/payment/{payment_id}/execute'
+        execute_payload = {
+            "payer_id": payer_id
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {access_token}"
+        }
+        execute_response = requests.post(execute_url, json=execute_payload, headers=headers)
+        execute_response_data = execute_response.json()
+
+        if execute_response.status_code == 200:
+            # O pagamento foi executado com sucesso
+            return {"success": True, "payment": execute_response_data}, 200
         else:
-            return {"success": False, "data": "Falha no processamento de pagamento."}, 400
-            
+            return
