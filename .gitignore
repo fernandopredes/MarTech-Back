@@ -1,5 +1,6 @@
 .env
 .venv/
+venv/
 .flaskenv
 .vscode
 __pycache__
