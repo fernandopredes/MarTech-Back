@@ -2,6 +2,8 @@ from db import db
 from models.user_items import user_items
 
 class UserModel(db.Model):
+    __tablename__ = 'user'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
