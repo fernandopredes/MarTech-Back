@@ -10,8 +10,9 @@ from flask_cors import CORS
 from db import db
 import models
 
-""" from resources.dailyrecord import blp as DailyRecordBlueprint
-from resources.user import blp as UserBlueprint """
+from resources.user import blp as UserBlueprint
+""" from resources.coupon import blp as CouponBlueprint
+from resources.transaction import blp as TransactionBluePrint """
 
 def create_app(db_url=None):
     app = Flask(__name__)
@@ -106,7 +107,8 @@ def create_app(db_url=None):
     with app.app_context():
         db.create_all()
 
-    """ api.register_blueprint(DailyRecordBlueprint)
-    api.register_blueprint(UserBlueprint) """
+    api.register_blueprint(UserBlueprint)
+    """     api.register_blueprint(CouponBlueprint)
+    api.register_blueprint(TransactionBluePrint) """
 
     return app
