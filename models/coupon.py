@@ -10,3 +10,8 @@ class CouponModel(db.Model):
     value = db.Column(db.Numeric(10, 2), nullable=False)
 
     transaction = db.relationship('TransactionModel', backref=db.backref('coupon', uselist=False))
+
+    #método para salvar o cupom no banco de dados
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
