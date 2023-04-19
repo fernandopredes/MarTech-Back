@@ -10,7 +10,12 @@ class UserModel(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
+    amount = db.Column(db.Numeric(10, 2), nullable=False)
 
     coupons = db.relationship('CouponModel', backref='user', lazy=True)
     items = db.relationship('ItemModel', secondary=user_items, backref=db.backref('users', lazy=True))
     transactions = db.relationship('TransactionModel', backref='user', lazy=True)
+
+    @classmethod
+    def find_by_id(cls, _id):
+        return cls.query.filter_by(id=_id).first()
