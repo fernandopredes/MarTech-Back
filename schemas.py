@@ -14,6 +14,7 @@ class ItemSchema(Schema):
     id = fields.Int(dump_only=True, description="id do item")
     name = fields.Str(required=True, description="nome do item")
     description = fields.Str(required=True, description="descrição do item")
+    value = fields.Decimal(required=True, as_string=True, description="valor do item")
 
     class Meta:
         description = "Define a estrutura de um item"
