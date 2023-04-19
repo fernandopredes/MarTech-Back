@@ -9,7 +9,7 @@ from schemas import PaymentSchema, CouponSchema, ExecutePaymentSchema
 from models.transaction import TransactionModel
 from models.user import UserModel
 
-TransactionBlueprint = Blueprint('transaction', __name__)
+TransactionBlueprint = Blueprint('Transaction', __name__, description="Operações de transição com o PayPal")
 
 # Configuração do PayPal
 PAYPAL_MODE = os.environ.get('PAYPAL_MODE', 'sandbox')
@@ -33,9 +33,10 @@ def get_paypal_access_token():
 @TransactionBlueprint.route('/process_payment')
 class ProcessPayment(MethodView):
     @TransactionBlueprint.arguments(PaymentSchema, location="json")
-    @TransactionBlueprint.response(201, CouponSchema, description="Pagamento processado com sucesso e cupom gerado.")
+    @TransactionBlueprint.response(201, CouponSchema, description="Pagamento processado e gerada a url de pagamento.")
     @TransactionBlueprint.response(400, description="Falha no processamento de pagamento.")
     def post(self, payment_data):
+        """ Rota para mandar os dados e gerar url de pagamento """
         remaining_value = payment_data.get("remaining_value")
         user_data = payment_data.get("user_data")
         access_token = get_paypal_access_token()
@@ -112,9 +113,10 @@ class ProcessPayment(MethodView):
 @TransactionBlueprint.route('/execute_payment')
 class ExecutePayment(MethodView):
     @TransactionBlueprint.arguments(ExecutePaymentSchema, location="json")
-    @TransactionBlueprint.response(200, description="Pagamento executado com sucesso.")
+    @TransactionBlueprint.response(200, description="Pagamento executado com sucesso e cupom criado.")
     @TransactionBlueprint.response(400, description="Falha na execução do pagamento.")
     def post(self, execute_data):
+        """ Rota para confirmar o pagamento e gerar o cupom """
         payment_id = execute_data.get('payment_id')
         payer_id = execute_data.get('payer_id')
 

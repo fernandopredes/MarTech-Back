@@ -19,11 +19,11 @@ def create_app(db_url=None):
     app = Flask(__name__)
     load_dotenv()
 
-    app.config["API_TITLE"] = "Ship Stock Sentry REST API"
+    app.config["API_TITLE"] = "MarTech REST API"
     app.config["API_VERSION"] = "v1"
     app.config["OPENAPI_VERSION"] = "3.0.3"
     app.config["OPENAPI_URL_PREFIX"] = "/"
-    app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui"
+    app.config["OPENAPI_SWAGGER_UI_PATH"] = "/"
     app.config[
         "OPENAPI_SWAGGER_UI_URL"
     ] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
@@ -111,7 +111,7 @@ def create_app(db_url=None):
     api.register_blueprint(UserBlueprint)
     api.register_blueprint(TransactionBlueprint)
     api.register_blueprint(CouponBlueprint)
-    
+
     if __name__ == "__main__":
         app = create_app()
         app.run(debug=True)
