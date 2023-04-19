@@ -8,6 +8,7 @@ from .transaction_utils import create_transaction
 from schemas import PaymentSchema, CouponSchema, ExecutePaymentSchema
 from models.transaction import TransactionModel
 from models.user import UserModel
+from flask_jwt_extended import jwt_required
 
 TransactionBlueprint = Blueprint('Transaction', __name__, description="Operações de transição com o PayPal")
 
@@ -32,6 +33,7 @@ def get_paypal_access_token():
 # End-point para realizar a primeira parte da transição para o PAYPAL
 @TransactionBlueprint.route('/process_payment')
 class ProcessPayment(MethodView):
+    @jwt_required()
     @TransactionBlueprint.arguments(PaymentSchema, location="json")
     @TransactionBlueprint.response(201, CouponSchema, description="Pagamento processado e gerada a url de pagamento.")
     @TransactionBlueprint.response(400, description="Falha no processamento de pagamento.")
@@ -112,6 +114,7 @@ class ProcessPayment(MethodView):
 
 @TransactionBlueprint.route('/execute_payment')
 class ExecutePayment(MethodView):
+    @jwt_required()
     @TransactionBlueprint.arguments(ExecutePaymentSchema, location="json")
     @TransactionBlueprint.response(200, description="Pagamento executado com sucesso e cupom criado.")
     @TransactionBlueprint.response(400, description="Falha na execução do pagamento.")
