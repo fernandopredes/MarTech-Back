@@ -1,11 +1,13 @@
 import os
 import requests
+from decimal import Decimal
 from flask.views import MethodView
 from flask_smorest import Blueprint
 from .coupon_utils import create_coupon
 from .transaction_utils import create_transaction
 from schemas import PaymentSchema, CouponSchema, ExecutePaymentSchema
 from models.transaction import TransactionModel
+from models.user import UserModel
 
 TransactionBlueprint = Blueprint('transaction', __name__)
 
@@ -40,8 +42,16 @@ class ProcessPayment(MethodView):
         if not user_data or "user_id" not in user_data:
             return {"success": False, "data": "Dados do usuário não foram fornecidos."}, 400
 
+        user_id = user_data.get("user_id")
+        user = UserModel.find_by_id(user_id)
+
+        if not user:
+            return {"success": False, "data": "Usuário não encontrado."}, 400
+
+        # Coloca o valor do pagamento como a subtração entre o total do usuario menos o que sobrou
+        payment_amount = user.amount - Decimal(remaining_value)
+
         # lógica para processar o pagamento com o PayPal
-        payment_amount = payment_data.get("amount")
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {access_token}"
@@ -54,7 +64,7 @@ class ProcessPayment(MethodView):
             "transactions": [
                 {
                     "amount": {
-                        "total": payment_amount,
+                        "total": str(payment_amount),
                         "currency": "BRL"
                     },
                     "description": "Pagamento do evento"
@@ -79,7 +89,7 @@ class ProcessPayment(MethodView):
             user_id = user_data.get("user_id")
 
             # Obter o user_id e o transaction_id e Salve a transação no banco de dados
-            transaction = create_transaction(user_id, payment_id, remaining_value)
+            transaction = create_transaction(user_id, payment_id, payment_amount)
 
             # Aprovação da URL para redirecionar o usuário
             approval_url = next((link["href"] for link in payment_response_data["links"] if link["rel"] == "approval_url"), None)
@@ -122,8 +132,10 @@ class ExecutePayment(MethodView):
             if transaction:
                 user_id = transaction.user_id
                 transaction_id = transaction.id
-                remaining_value = transaction.remaining_amount
-                coupon = create_coupon(user_id, transaction_id, remaining_value)
+                user = UserModel.find_by_id(user_id)
+                if user:
+                    remaining_value = user.amount - transaction.payment_amount
+                    coupon = create_coupon(user_id, transaction_id, remaining_value)
                 return {"success": True, "payment": execute_response_data, "coupon": coupon}, 200
             else:
                 return {"error": "Transação não encontrada"}, 400

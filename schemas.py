@@ -5,6 +5,7 @@ class UserSchema(Schema):
     name = fields.Str(required=True, description="nome do usuário")
     email = fields.Email(required=True, description="e-mail do usuário")
     password = fields.Str(required=True, load_only=True, description="senha do usuário")
+    amount = fields.Decimal(required=True, description="Total que pode ser gasto pelo usuário")
 
     class Meta:
         description = "Define a estrutura de um usuário"
@@ -24,6 +25,7 @@ class CouponSchema(Schema):
     code = fields.Str(required=True, description="código do cupom")
     value = fields.Decimal(required=True, as_string=True, description="valor do cupom")
 
+
     class Meta:
         description = "Define a estrutura de um cupom"
 
@@ -31,7 +33,7 @@ class TransactionSchema(Schema):
     id = fields.Int(dump_only=True, description="id da transação")
     user_id = fields.Int(required=True, description="id do usuário")
     payment_id = fields.Str(required=True, description="id do pagamento")
-    remaining_amount = fields.Decimal(required=True, as_string=True, description="valor restante")
+    payment_amount = fields.Decimal(required=True, as_string=True, description="valor gasto na transação")
 
     class Meta:
         description = "Define a estrutura de uma transação"
@@ -73,7 +75,7 @@ class UserDataSchema(Schema):
 class PaymentSchema(Schema):
     remaining_value = fields.Float(required=True)
     user_data = fields.Nested(UserDataSchema, required=True)
-    amount = fields.Float(required=True)
+    """  amount = fields.Float(required=True) """
 
 class CouponSchema(Schema):
     code = fields.String(required=True)
