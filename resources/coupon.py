@@ -10,8 +10,8 @@ CouponBlueprint = Blueprint("Coupons", __name__, description="Operações com cu
 class CouponsByUser(MethodView):
     def get(self, user_id):
         """ Rota para obter cupons por ID de usuário """
-        coupons = CouponModel.query.filter_by(user_id=user_id).all()
+        coupons = CouponModel.query.filter_by(user_id = user_id).all()
         if coupons:
-            return CouponSchema().dump(coupons, many=True)
+            return {"coupon": CouponSchema().dump(coupons, many = True)}, 200
         else:
             abort(404, message="Nenhum cupom encontrado para este usuário.")
