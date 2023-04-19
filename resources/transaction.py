@@ -5,6 +5,7 @@ from flask_smorest import Blueprint
 from .coupon_utils import create_coupon
 from .transaction_utils import create_transaction
 from schemas import PaymentSchema, CouponSchema, ExecutePaymentSchema
+from models.transaction import TransactionModel
 
 TransactionBlueprint = Blueprint('transaction', __name__)
 
@@ -117,6 +118,14 @@ class ExecutePayment(MethodView):
 
         if execute_response.status_code == 200:
             # O pagamento foi executado com sucesso
-            return {"success": True, "payment": execute_response_data}, 200
+            transaction = TransactionModel.find_by_payment_id(payment_id)
+            if transaction:
+                user_id = transaction.user_id
+                transaction_id = transaction.id
+                remaining_value = transaction.remaining_amount
+                coupon = create_coupon(user_id, transaction_id, remaining_value)
+                return {"success": True, "payment": execute_response_data, "coupon": coupon}, 200
+            else:
+                return {"error": "Transação não encontrada"}, 400
         else:
-            return
+            return {"error": "Falha na execução do pagamento."}, 400
