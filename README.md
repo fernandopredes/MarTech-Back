@@ -4,7 +4,7 @@
 
 # Projeto Martech - Pagamento e criação de Vouchers/Cupons 🛍️
 
- Desenvolvida com Flask, essa aplicação permite que os usuários recebam um valor em reais na hora de se cadastrar. Após realizar o login, escolherem os produtos e realizarem o pagamento com o PayPal, os usuários ganham um voucher de desconto com o valor que não foi gasto e ele fica visível para quem acessar a API.
+ Desenvolvida com Flask, essa aplicação permite que o usuário receba um valor em reais na hora de se cadastrar. Após realizar o login, escolher os produtos e realizar o pagamento com PayPal, o usuário ganha um voucher de desconto com o valor que não foi gasto e ele fica visível para quem acessar a API.
 
 ## Configuração 🔧
 
